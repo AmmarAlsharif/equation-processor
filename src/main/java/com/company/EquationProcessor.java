@@ -4,8 +4,6 @@ import static java.lang.Character.isDigit;
 import static java.lang.Character.isLetter;
 
 import java.util.Stack;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class EquationProcessor {
   private final Stack<Operator> operationsStack = new Stack<>();
@@ -40,7 +38,7 @@ public class EquationProcessor {
   }
 
   private char[] getEquationAsCharacters(String equation) {
-    checkInput(equation);
+    Validation.validate(equation);
     equation += ')';
     return equation
         .replace(" ", "")
@@ -143,42 +141,5 @@ public class EquationProcessor {
 
   private boolean isOperator(char ch) {
     return String.valueOf(ch).matches("[-,*,/,+,^]");
-  }
-
-  public void checkInput(String equation) {
-    Pattern pattern = Pattern.compile("\\d[ ]+\\d");
-    Matcher matcher = pattern.matcher(equation);
-    if (matcher.find()) {
-      throw new IllegalArgumentException("Syntax error, space separated numbers are not allowed");
-    }
-    String operations = "[*/^]";
-    String plusMinus = "[-+]";
-    pattern =
-        Pattern.compile(
-            operations
-                + "[ ]*"
-                + operations
-                + "|"
-                + plusMinus
-                + "[ ]*"
-                + plusMinus
-                + "[ ]*"
-                + plusMinus
-                + "|"
-                + plusMinus
-                + "[ ]*"
-                + operations);
-    matcher = pattern.matcher(equation);
-    if (matcher.find()) {
-      throw new IllegalArgumentException("Syntax error, Consecutive operations are not allowed");
-    }
-    char firstChar = equation.charAt(0);
-    if (firstChar != '(' && firstChar != '-' && !isDigit(firstChar) && !isLetter(firstChar)) {
-      throw new IllegalArgumentException("Syntax error, can't start with \"" + firstChar + "\"");
-    }
-    char lastChar = equation.charAt(equation.length() - 1);
-    if (lastChar != ')' && (!isDigit(lastChar) || isOperator(lastChar))) {
-      throw new IllegalArgumentException("Syntax error, can't end with \"" + lastChar + "\"");
-    }
   }
 }
